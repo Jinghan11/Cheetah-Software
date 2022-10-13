@@ -1,5 +1,26 @@
-## Commit tets
+## 文件夹简介
+cmake : cmake 文件
+common: 状态估计及触地检测, 贝塞尔曲线轨迹生成, 步态生成, 机器人的动力学模型
+config: cheetah配置文件
+documentation: 模拟器和机器人本体的getting started文档
+lcm_types: 自定义的LCM消息类型
+resources: 模拟器用到的CAD文件
+robot: 机器人的底层SPI和SBUS通信, 部分进程是硬实时的
+scripts: 机器人初始化和LCM消息生成脚本
+sim: 模拟器
+third-party : 第三方库
+user: 控制器和状态机
 
+## user内容
+Example_Leg_InvDyn: 腿的逆动力学示例, 即上文说的接触腿的力控制器
+JPos_Controller: 关节位置控制示例， 即上文所说的摆动腿轨迹跟踪控制器, 值得注意的是, 这里使用了三角函数成作为轨迹生成器, 而正式使用的是贝塞尔曲线。
+
+MIT_Controller:是最核心最复杂的控制器, 分为:
+FSM: 有限状态机, 负责机器人各个状态: 站起, 站定时平衡, 腿末端阻抗, 腿被动, 腿关节PD+前馈, 各种步态的切换及控制.
+BlanceController: QP平衡控制器
+convexMPC: 上文提到的凸MPC控制器
+
+-------------------------------------------------——————————------——————-----------——————————————————————————————————————————————————————
 ## Cheetah-Software
 This repository contains the Robot and Simulation software project.  For a getting started guide, see the documentation folder.
 
