@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
 project(sim)
 
+set(CMAKE_PREFIX_PATH /home/linjh/Qt/Tools/QtDesignStudio/qt5_design_studio_reduced_version)
+set(QT5Core_DIR /home/linjh/Qt/Tools/QtDesignStudio/qt5_design_studio_reduced_version/lib/cmake/QT5Core)
+set(QT5Widgets_DIR /home/linjh/Qt/Tools/QtDesignStudio/qt5_design_studio_reduced_version/lib/cmake/QT5Widgets)
+set(QT5Gamepad_DIR /home/linjh/Qt/Tools/QtDesignStudio/qt5_design_studio_reduced_version/lib/cmake/QT5Gamepad)
+
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 execute_process(COMMAND ${CMAKE_SOURCE_DIR}/scripts/find_qt_path.sh OUTPUT_VARIABLE CMAKE_PREFIX_PATH_1)
-SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH_1})
+
 # message("CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 if(POLICY CMP0071)
