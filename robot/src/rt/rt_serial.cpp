@@ -1,6 +1,7 @@
 /*!
  * @file rt_serial.cpp
  * @brief Serial port
+ * editted by Jinghan
  */
 
 #ifdef linux
@@ -14,14 +15,17 @@
 
 #define termios asmtermios
 
-#include <asm/termios.h>
+//#include <asm/termios.h>
+#include<asm/ioctls.h>
+#include<asm/termbits.h>
 
 #undef termios
 
 #include <termios.h>
 #include <math.h>
 #include <pthread.h>
-#include <stropts.h>
+#include <sys/ioctl.h>
+#include <stropts.h> //ubuntu 20 didn't support this 
 #include <endian.h>
 #include <stdint.h>
 

@@ -15,6 +15,9 @@
  * Initialize the simulator here.  It is _not_ okay to block here waiting for
  * the robot to connect. Use firstRun() instead!
  */
+//allow SPI data print to txt file
+ FILE * fp;
+
 Simulation::Simulation(RobotType robot, Graphics3D* window,
                        SimulatorControlParameters& params, ControlParameters& userParams, std::function<void(void)> uiUpdate)
     : _simParams(params), _userParams(userParams), _tau(12) {
@@ -470,10 +473,12 @@ void Simulation::highLevelControl() {
   // update
   if (_robot == RobotType::MINI_CHEETAH) {
     _spiCommand = _sharedMemory().robotToSim.spiCommand;
-
-    // pretty_print(_spiCommand.q_des_abad, "q des abad", 4);
-    // pretty_print(_spiCommand.q_des_hip, "q des hip", 4);
-    // pretty_print(_spiCommand.q_des_knee, "q des knee", 4);
+    fp = fopen ("SPIdata.txt", "a+");
+    pretty_print(_spiCommand.q_des_abad, "q des abad", 4);
+    pretty_print(_spiCommand.q_des_hip, "q des hip", 4);
+    pretty_print(_spiCommand.q_des_knee, "q des knee", 4);
+    
+    fclose(fp);
   } else if (_robot == RobotType::CHEETAH_3) {
     for (int i = 0; i < 4; i++) {
       _tiBoards[i].command = _sharedMemory().robotToSim.tiBoardCommand[i];

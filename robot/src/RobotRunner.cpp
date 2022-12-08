@@ -102,6 +102,10 @@ void RobotRunner::run() {
   } else {
     _legController->setEnabled(true);
 
+    /*如果遥控器控制的模式为0，且通过界面读取到的配置文档的use_rc参数为1（即使用遥控器），
+    则停留在Estop()模式中。因此，只要跳过此判断，就能够继续向下执行控制器，跳过ESTOP模式。*/
+
+    controlParameters -> use_rc = 0;//使其不进入随后的if判断语句
     if( (rc_control.mode == 0) && controlParameters->use_rc ) {
       if(count_ini%1000 ==0)   printf("ESTOP!\n");
       for (int leg = 0; leg < 4; leg++) {
@@ -140,7 +144,6 @@ void RobotRunner::run() {
     }
 
   }
-
 
 
   // Visualization (will make this into a separate function later)

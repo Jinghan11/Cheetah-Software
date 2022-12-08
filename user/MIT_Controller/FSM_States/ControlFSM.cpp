@@ -96,6 +96,8 @@ void ControlFSM<T>::runFSM() {
   // Check the robot state for safe operation
   operatingMode = safetyPreCheck();
 
+  //下面的if函数在此处被注释掉，为了实现在仿真中的自动运行
+  /*
   if(data.controlParameters->use_rc){
     int rc_mode = data._desiredStateCommand->rcCommand->mode;
     if(rc_mode == RC_mode::RECOVERY_STAND){
@@ -115,6 +117,40 @@ void ControlFSM<T>::runFSM() {
    }
       //data.controlParameters->control_mode = K_FRONTJUMP;
     //std::cout<< "control mode: "<<data.controlParameters->control_mode<<std::endl;
+  }*/
+  
+    /**
+     *直接通过iter计时，从掉电状态K_PASSIVE切换到位控的站立状态K_RECOVERY_STAND；
+     *切换到力控的站立状态K_BALANCE_STAND；再切换到运动状态K_LOCOMOTION，对应
+     *于convexMPC/convexMPCLocomotion.cpp中的控制器，可以编辑控制器实现预设的运动，
+     *包括机身六自由度的运动和不同步态模式的设定；最后切换到力控站立后，做了一个后空翻的动作。
+     */
+  if (iter<1000)
+  {
+    data.controlParameters->control_mode = K_PASSIVE;
+    printf("control_mode = K_PASSIVE=0\n");
+  }
+  else if (iter<2000){
+    data.controlParameters->control_mode = K_RECOVERY_STAND;
+  }
+  else if (iter<3000){
+    data.controlParameters->control_mode = K_BALANCE_STAND;
+    printf("control_mode = K_BALANCE_STAND\n");
+  }
+  else if (iter<50000){
+    data.controlParameters->control_mode = K_LOCOMOTION;
+    printf("control_mode = K_LOCOMOTION\n");
+  }
+  else if (iter<59000) {
+    data.controlParameters->control_mode = K_BALANCE_STAND;
+    printf("control_mode = K_BALANCE_STAND\n");
+  }
+  else if (iter<62000){
+    data.controlParameters->control_mode = K_RECOVERY_STAND;
+    printf("control_mode = K_RECOVERY_STAND\n");
+  }
+  else{
+    printf("done!\n");
   }
 
   // Run the robot control code if operating mode is not unsafe

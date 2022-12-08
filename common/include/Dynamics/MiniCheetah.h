@@ -22,19 +22,22 @@ Quadruped<T> buildMiniCheetah() {
   cheetah._robotType = RobotType::MINI_CHEETAH;
 
   cheetah._bodyMass = 3.3;
-  cheetah._bodyLength = 0.19 * 2;
+  //cheetah._bodyLength = 0.19 * 2; // original version
+  cheetah._bodyLength = 0.14 * 2; // our robot version
   cheetah._bodyWidth = 0.049 * 2;
   cheetah._bodyHeight = 0.05 * 2;
   cheetah._abadGearRatio = 6;
   cheetah._hipGearRatio = 6;
   cheetah._kneeGearRatio = 9.33;
   cheetah._abadLinkLength = 0.062;
-  cheetah._hipLinkLength = 0.209;
+  //cheetah._hipLinkLength = 0.209; // original version
+  cheetah._hipLinkLength = 0.17; // our robot version
   //cheetah._kneeLinkLength = 0.175;
   //cheetah._maxLegLength = 0.384;
   cheetah._kneeLinkY_offset = 0.004;
   //cheetah._kneeLinkLength = 0.20;
-  cheetah._kneeLinkLength = 0.195;
+  //cheetah._kneeLinkLength = 0.195; // original version
+  cheetah._kneeLinkLength = 0.17; // our robot version
   cheetah._maxLegLength = 0.409;
 
 

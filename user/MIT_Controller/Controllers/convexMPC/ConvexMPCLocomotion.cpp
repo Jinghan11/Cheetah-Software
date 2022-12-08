@@ -72,14 +72,14 @@ void ConvexMPCLocomotion::recompute_timing(int iterations_per_mpc) {
 
 void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
   if(data._quadruped->_robotType == RobotType::MINI_CHEETAH){
-    _body_height = 0.29;
+    _body_height = 0.29;//mit初始数值为0.29
   }else if(data._quadruped->_robotType == RobotType::CHEETAH_3){
     _body_height = 0.45;
   }else{
     assert(false);
   }
 
-  float x_vel_cmd, y_vel_cmd;
+  float x_vel_cmd = 0, y_vel_cmd = 0;
   float filter(0.1);
   if(data.controlParameters->use_rc){
     const rc_control_settings* rc_cmd = data._desiredStateCommand->rcCommand;
@@ -89,9 +89,62 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
     y_vel_cmd = rc_cmd->v_des[1] * 0.5;
     _body_height += rc_cmd->height_variation * 0.08;
   }else{
-    _yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0];
-    x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1];
-    y_vel_cmd = data._desiredStateCommand->leftAnalogStick[0];
+    //该情况为不使用遥控器的情况
+    //_yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0];
+    //x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1];
+    //y_vel_cmd = data._desiredStateCommand->leftAnalogStick[0];
+
+    // iterationCounter 周期为0.002s
+
+    
+    if (iterationCounter%500==0){
+    printf("iteration count = %d", iterationCounter);}
+    int64_t t = iterationCounter*0.002;   
+    if(t<5)
+    {
+      gaitNumber = 6;
+      x_vel_cmd = 0.3;//+0.07;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    else if (t<10)
+    {
+      gaitNumber = 6;
+      x_vel_cmd = -0.3;//+0.07;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    else if (t<15)
+    {
+      gaitNumber = 2;
+      x_vel_cmd = 0.3;//+0.07;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    else if (t<20)
+    {
+      gaitNumber = 3;
+      x_vel_cmd = 0.3;//+0.07;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    else if (t<25)
+    {
+      gaitNumber = 5;
+      x_vel_cmd = 0.3;//+0.07;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    else if (t<30)
+    {
+      gaitNumber = 8;
+      x_vel_cmd = 0.3;//+0.07;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    else
+    {
+      gaitNumber = 6;
+      _yaw_turn_rate = sin(t) ;//-sin(4*t)
+      x_vel_cmd = 0.3;//+0.07;
+      y_vel_cmd = 0.0;
+      printf("gait number = %d \n",gaitNumber);
+    }
+    
   }
   _x_vel_des = _x_vel_des*(1-filter) + x_vel_cmd*filter;
   _y_vel_des = _y_vel_des*(1-filter) + y_vel_cmd*filter;
@@ -100,6 +153,29 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
   _roll_des = 0.;
   _pitch_des = 0.;
 
+  
+  /*
+   *实现机械狗的运动流程为：开机启动->站立->周期性前后走->停止
+  
+  double t = sin(0.5*iterationCounter*0.002);
+  if(t>=0)
+  {
+      gaitNumber = 6;
+      _yaw_turn_rate = 0.0;
+      x_vel_cmd = 0.2;//+0.07;
+      y_vel_cmd = 0;
+      printf("t>=0,step forward\n");
+  }
+  else if(t<0) 
+  {
+      gaitNumber = 1;
+      _yaw_turn_rate = 0;
+      x_vel_cmd = -0.2;//+0.07;
+      y_vel_cmd = 0.0;
+      printf("t<0,back\n");
+  }      
+  printf("out!, t=%f\n",t);
+  */
 }
 
 template<>
@@ -142,9 +218,9 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   else if(gaitNumber == 5)
     gait = &trotRunning;
   else if(gaitNumber == 6)
-    gait = &random2;
+    gait = &random2;//Double Trot
   else if(gaitNumber == 7)
-    gait = &random2;
+    gait = &random2;//Double Trot
   else if(gaitNumber == 8)
     gait = &pacing;
   current_gait = gaitNumber;
