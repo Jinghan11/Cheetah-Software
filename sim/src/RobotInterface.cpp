@@ -122,7 +122,7 @@ void RobotInterface::sendControlParameter(const std::string &name,
     // wait for response with timeout
     _waitingForLcmResponse = true;
     _lcmResponseBad = true;
-    std::unique_lock<std::mutex> lock(_lcmMutex);
+    std::unique_lock<std::mutex> lock(_lcmMutex);//互斥锁
 
     if (_lcmCV.wait_for(lock, 100ms) == std::cv_status::no_timeout) {
       _waitingForLcmResponse = false;
@@ -154,6 +154,7 @@ void RobotInterface::handleControlParameter(
     const control_parameter_respones_lcmt *msg) {
   (void)rbuf;
   (void)chan;
+  //_waitingForLcmResponse为ture代表LCM正常工作
   if (!_waitingForLcmResponse) {
     printf(
         "[RobotInterface] Got a control parameter response when we weren't "

@@ -66,3 +66,8 @@ if [ "$1" == "dhmac" ]; then
     sudo ifconfig enx70886b887f40 multicast
     sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev enx70886b887f40
 fi
+
+if [ "$1" == "lin" ]; then
+    sudo ifconfig wlp0s20f3 multicast
+    sudo route add -net 10.0.0.0 netmask 255.0.0.0 dev wlp0s20f3
+fi

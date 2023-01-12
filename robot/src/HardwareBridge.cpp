@@ -42,10 +42,13 @@ void HardwareBridge::initError(const char* reason, bool printErrno) {
 /*!
  * All hardware initialization steps that are common between Cheetah 3 and Mini Cheetah
  */
+
+
 void HardwareBridge::initCommon() {
   printf("[HardwareBridge] Init stack\n");
   prefaultStack();
   printf("[HardwareBridge] Init scheduler\n");
+  printf("ttttttttttttttttttttttest\n");
   setupScheduler();
   if (!_interfaceLCM.good()) {
     initError("_interfaceLCM failed to initialize\n", false);
@@ -59,6 +62,7 @@ void HardwareBridge::initCommon() {
   printf("[HardwareBridge] Start interface LCM handler\n");
   _interfaceLcmThread = std::thread(&HardwareBridge::handleInterfaceLCM, this);
 }
+
 
 /*!
  * Run interface LCM
@@ -223,8 +227,14 @@ void HardwareBridge::handleControlParameter(
 }
 
 
+/*
+ * ======================================================================================
+ * Following class functions are specifically defined for MiniCheetah robot
+ */
+
 MiniCheetahHardwareBridge::MiniCheetahHardwareBridge(RobotController* robot_ctrl, bool load_parameters_from_file)
     : HardwareBridge(robot_ctrl), _spiLcm(getLcmUrl(255)), _microstrainLcm(getLcmUrl(255)) {
+
   _load_parameters_from_file = load_parameters_from_file;
 }
 
@@ -236,6 +246,7 @@ void MiniCheetahHardwareBridge::run() {
   initHardware();
 
   if(_load_parameters_from_file) {
+  //if(true) {
     printf("[Hardware Bridge] Loading parameters from file...\n");
 
     try {
@@ -270,15 +281,15 @@ void MiniCheetahHardwareBridge::run() {
       printf("Did not load user parameters because there aren't any\n");
     }
   } else {
-    printf("[Hardware Bridge] Loading parameters over LCM...\n");
+    printf("[Hardware Bridge mc] mc Loading parameters over LCM...\n");
     while (!_robotParams.isFullyInitialized()) {
-      printf("[Hardware Bridge] Waiting for robot parameters...\n");
+      printf("[Hardware Bridge mc] mc Waiting for robot parameters...\n");
       usleep(1000000);
     }
 
     if(_userControlParameters) {
       while (!_userControlParameters->isFullyInitialized()) {
-        printf("[Hardware Bridge] Waiting for user parameters...\n");
+        printf("[Hardware Bridge mc] mc Waiting for user parameters...\n");
         usleep(1000000);
       }
     }
@@ -415,6 +426,13 @@ void MiniCheetahHardwareBridge::runSpi() {
 
   memcpy(cmd, &_spiCommand, sizeof(spi_command_t));
   spi_driver_run();
+
+  //check the message send/receive from spine
+  //printf("[RT SPI] SPI data q_hip is %f\n", data->q_hip[1]); 
+  //printf("[RT SPI] SPI command q_des_hip is %f\n",cmd->q_des_hip[1]);
+  //pretty_print(cmd->q_des_abad, "q des abad", 4);
+  //pretty_print(cmd->q_des_hip, "q des hip", 4);
+  //pretty_print(cmd->q_des_knee, "q des knee", 4);
   memcpy(&_spiData, data, sizeof(spi_data_t));
 
   _spiLcm.publish("spi_data", data);
@@ -528,13 +546,13 @@ void Cheetah3HardwareBridge::run() {
 
   printf("[Hardware Bridge] Loading parameters over LCM...\n");
   while (!_robotParams.isFullyInitialized()) {
-    printf("[Hardware Bridge] Waiting for robot parameters...\n");
+    printf("[Hardware Bridge C] C Waiting for robot parameters...\n");
     usleep(1000000);
   }
 
   if(_userControlParameters) {
     while (!_userControlParameters->isFullyInitialized()) {
-      printf("[Hardware Bridge] Waiting for user parameters...\n");
+      printf("[Hardware Bridge C] C Waiting for user parameters...\n");
       usleep(1000000);
     }
   }

@@ -14,6 +14,9 @@
 #include "rt/rt_spi.h"
 #include <lcm/lcm-cpp.hpp>
 
+#define SPI_STATUS
+//#define SPI_CAN
+
 unsigned char spi_mode = SPI_MODE_0;
 unsigned char spi_bits_per_word = 8;
 unsigned int spi_speed = 6000000;
@@ -36,6 +39,11 @@ pthread_mutex_t spi_mutex;
 const float max_torque[3] = {17.f, 17.f, 26.f};  // TODO CHECK WITH BEN
 const float wimp_torque[3] = {6.f, 6.f, 6.f};    // TODO CHECK WITH BEN
 const float disabled_torque[3] = {0.f, 0.f, 0.f};
+
+/*
+ * actual joint angles = (sim joint angles * side sign) + joint offsets
+ * sim joint angles = (actual joint angles - joint offsets) * side sign
+ * */
 
 // only used for actual robot
 const float abad_side_sign[4] = {-1.f, -1.f, 1.f, 1.f};
@@ -268,6 +276,19 @@ void spine_to_spi(spi_data_t *data, spine_data_t *spine_data, int leg_0) {
   if (calc_checksum != (uint32_t)spine_data->checksum)
     printf("SPI ERROR BAD CHECKSUM GOT 0x%hx EXPECTED 0x%hx\n", calc_checksum,
            spine_data->checksum);
+
+  #ifdef SPI_STATUS
+      else
+      printf("SPI %d WORKS NORMAL\n",leg_0);
+  #endif
+
+  #ifdef SPI_CAN
+    for (int j = 0; j < 4; ++j) {
+      //        if ((data->flags[j])==1 && data->flags[j]!=57005 && data->flags[j]!=48879)
+            printf("CAN%d STATUS ERROR:%d\n",j,data->flags[j]);
+    }
+  #endif
+
 }
 
 /*!
@@ -322,6 +343,10 @@ void spi_send_receive(spi_command_t *command, spi_data_t *data) {
                    &spi_message);
     (void)rv;
 
+    if (rv < 0) printf("[ERROR] SPI %d COMMUNICATION FAILED(%d).\n", spi_board,rv);
+
+
+
     // flip bytes the other way
     for (int i = 0; i < 30; i++)
       data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
@@ -329,6 +354,8 @@ void spi_send_receive(spi_command_t *command, spi_data_t *data) {
 
     // copy back to data
     spine_to_spi(data, &g_spine_data, spi_board * 2);
+
+    
   }
 }
 
@@ -345,6 +372,8 @@ void spi_driver_run() {
   pthread_mutex_lock(&spi_mutex);
   spi_send_receive(&spi_command_drv, &spi_data_drv);
   pthread_mutex_unlock(&spi_mutex);
+
+  
 }
 
 /*!

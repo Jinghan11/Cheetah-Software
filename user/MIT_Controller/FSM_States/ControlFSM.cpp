@@ -125,29 +125,48 @@ void ControlFSM<T>::runFSM() {
      *于convexMPC/convexMPCLocomotion.cpp中的控制器，可以编辑控制器实现预设的运动，
      *包括机身六自由度的运动和不同步态模式的设定；最后切换到力控站立后，做了一个后空翻的动作。
      */
-  if (iter<1000)
+  if (iter<1001)
   {
     data.controlParameters->control_mode = K_PASSIVE;
-    printf("control_mode = K_PASSIVE=0\n");
+    if(iter%1000 == 0)
+    {
+      printf("control_mode = K_PASSIVE\n");
+    }
   }
-  else if (iter<2000){
+  else if (iter<2001){
     data.controlParameters->control_mode = K_RECOVERY_STAND;
+    if(iter%1000 == 0)
+    {
+      printf("control_mode = K_RECOVERY_STAND\n");
+    }
   }
-  else if (iter<3000){
+  else if (iter<3001){
     data.controlParameters->control_mode = K_BALANCE_STAND;
-    printf("control_mode = K_BALANCE_STAND\n");
+    if(iter%1000 == 0)
+    {
+      printf("control_mode = K_BALANCE_STAND\n");
+    }
   }
-  else if (iter<50000){
+  else if (iter<50001){
     data.controlParameters->control_mode = K_LOCOMOTION;
-    printf("control_mode = K_LOCOMOTION\n");
+    if(iter%1000 == 0)
+    {
+      printf("control_mode = K_LOCOMOTION\n");
+    }
   }
-  else if (iter<59000) {
+  else if (iter<59001) {
     data.controlParameters->control_mode = K_BALANCE_STAND;
-    printf("control_mode = K_BALANCE_STAND\n");
+    if(iter%1000 == 0)
+    {
+      printf("control_mode = K_BALANCE_STAND\n");
+    }
   }
-  else if (iter<62000){
+  else if (iter<62001){
     data.controlParameters->control_mode = K_RECOVERY_STAND;
-    printf("control_mode = K_RECOVERY_STAND\n");
+    if(iter%1000 == 0)
+    {
+      printf("control_mode = K_RECOVERY_STAND\n");
+    }
   }
   else{
     printf("done!\n");
