@@ -1,5 +1,6 @@
 #include "JPos_Controller.hpp"
 
+
 void JPos_Controller::runController(){
 
   Mat3<float> kpMat;
@@ -12,6 +13,8 @@ void JPos_Controller::runController(){
   static int iter(0);
   ++iter;
 
+
+  //Reading current joint position
   if(iter < 10){
     for(int leg(0); leg<4; ++leg){
       for(int jidx(0); jidx<3; ++jidx){
@@ -20,7 +23,7 @@ void JPos_Controller::runController(){
     }
   }
 
-  _legController->_maxTorque = 150;
+  _legController->_maxTorque = 2;
   _legController->_legsEnabled = true;
 
   if(userParameters.calibrate > 0.4) {
@@ -46,9 +49,15 @@ void JPos_Controller::runController(){
 
 
 
-  //if(iter%200 ==0){
-    //printf("value 1, 2: %f, %f\n", userParameters.testValue, userParameters.testValue2);
-  //}
+  if(iter%200 ==0){
+//printf("value 1, 2: %f, %f\n", userParameters.testValue, userParameters.testValue2);
+  printf("leg 0: qDes of Ab is %f\n", _legController->commands[0].qDes[0]);
+  printf("leg 0: qDes of Ab is %f\n", _legController->commands[1].qDes[0]);
+  printf("leg 0: qDes of Ab is %f\n", _legController->commands[2].qDes[0]);
+  printf("leg 0: qDes of Ab is %f\n", _legController->commands[3].qDes[0]);
+  
+
+  }
 
 
 }
